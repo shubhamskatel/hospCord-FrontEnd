@@ -50,7 +50,22 @@ const abi = [
     name: "addedRecords",
     outputs: [
       {
-        internalType: "contract Record",
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "addr",
+    outputs: [
+      {
+        internalType: "address",
         name: "",
         type: "address",
       },
@@ -74,7 +89,7 @@ const abi = [
     name: "getRecords",
     outputs: [
       {
-        internalType: "contract Record[]",
+        internalType: "address[]",
         name: "",
         type: "address[]",
       },

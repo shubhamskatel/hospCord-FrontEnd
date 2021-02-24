@@ -111,9 +111,10 @@ contract PatHome {
     bytes32  id;
     string doctor;
     string hospital;
+    address public addr;
 
     // To store all the Record Address of the patient
-    Record[] public addedRecords;
+    address[] public addedRecords;
     
     constructor(string memory _name, string memory _dob, string memory _bGroup, bytes32 _id, string memory _doctor, string memory _hospital) public {
         name = _name;
@@ -127,13 +128,14 @@ contract PatHome {
     
     //function to add a new record (call to the 3rd contract)
     function addrecord() public {
-        Record newRecord = new Record(name, dob, bGroup, doctor, hospital);
+        address newRecord = address(new Record(name, dob, bGroup, doctor, hospital));
         addedRecords.push(newRecord);
+        addr = newRecord;
     }
     
     
     //to fetch all the records
-    function getRecords() public view returns (Record[] memory) {
+    function getRecords() public view returns (address[] memory) {
         return addedRecords;
     }
     
