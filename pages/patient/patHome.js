@@ -15,24 +15,46 @@ class Home extends Component {
     bGroup: "",
     id: "",
     address: "",
+    records: "",
   };
 
   static async getInitialProps(props) {
     const add = props.query.address;
-    const patient = Patient(add);
-
-    return { address: add, patient: patient };
+    return { address: add };
   }
 
   async componentDidMount() {
+    const patient = Patient(this.props.address);
     const summary = await patient.methods.getPatient().call();
+
+    const records = await patient.methods.getRecords().call();
+    this.renderRecords();
 
     this.setState({
       name: summary[0],
       dob: summary[1],
       bGroup: summary[2],
       id: summary[3],
+      record: records,
     });
+  }
+
+  renderRecords() {
+    try {
+      const items = this.state.record.map((address, i) => {
+        return {
+          key: i,
+          header: address,
+          description: "View Record",
+          fluid: true,
+          style: { overflowWrap: "break-word" },
+        };
+      });
+
+      return <Card.Group items={items} />;
+    } catch (error) {
+      console.log("Error", error);
+    }
   }
 
   renderCards() {
@@ -62,6 +84,7 @@ class Home extends Component {
     try {
       const accounts = await web3.eth.getAccounts();
 
+      const patient = Patient(this.props.address);
       await patient.methods.addrecord().send({ from: accounts[0] });
 
       const add = await patient.methods.addr().call();
@@ -72,21 +95,6 @@ class Home extends Component {
       return err;
     }
   };
-
-  async renderRecords() {
-    const records = await patient.methods.getRecords().call();
-
-    const items = records.map((address) => {
-      return {
-        header: address,
-        description: "Hello",
-        fluid: true,
-        style: { overflowWrap: "break-word" },
-      };
-    });
-
-    return <Card.Group items={items} />;
-  }
 
   render() {
     return (
