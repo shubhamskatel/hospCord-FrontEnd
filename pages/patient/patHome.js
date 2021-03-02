@@ -6,7 +6,6 @@ import Layout from "../../components/Layout";
 import routes, { Link, Router } from "../../routes";
 import AllRecords from "../../components/allRecords";
 import web3 from "../../components/abis/web3";
-import Record from "../../components/recButton";
 
 class Home extends Component {
   state = {
@@ -45,7 +44,11 @@ class Home extends Component {
         return {
           key: i,
           header: address,
-          description: "View Record",
+          description: (
+            <Link route={`/records/${address}`}>
+              <a>View Campaign</a>
+            </Link>
+          ),
           fluid: true,
           style: { overflowWrap: "break-word" },
         };
@@ -90,7 +93,7 @@ class Home extends Component {
       const add = await patient.methods.addr().call();
       this.setState({ address: add });
 
-      Router.pushRoute(`/patient/records/${this.state.address}`);
+      Router.pushRoute(`/patient/ipfs/${this.state.address}`);
     } catch (err) {
       return err;
     }
@@ -100,7 +103,7 @@ class Home extends Component {
     return (
       <Layout>
         <div>
-          <h3 style={{ paddingTop: "70px" }}>Hello, Patient !!</h3>
+          <h3>Hello, Patient !!</h3>
 
           <br></br>
 

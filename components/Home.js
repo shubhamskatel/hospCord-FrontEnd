@@ -14,7 +14,7 @@ class Home extends Component {
     };
 
     return (
-      <div style={{ paddingTop: "80px", textAlign: "center" }}>
+      <div style={{ textAlign: "center" }}>
         <Grid stackable columns={3} padded="horizontally">
           <Grid.Row>
             <Grid.Column>

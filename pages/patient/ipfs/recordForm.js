@@ -9,6 +9,7 @@ function Patient({ patient, update, index, removeLine, updatePatient }) {
     patient[e.target.name] = e.target.value;
     updatePatient(patient);
   };
+
   return (
     <div>
       <form className="m-2">

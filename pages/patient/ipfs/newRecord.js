@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Patient from "./patient";
-// import { makeHash } from "../common";
-// import { useHistory } from "react-router-dom";
+
+import Layout from "../../../components/Layout";
+import Patient from "./recordForm";
+import { makeHash } from "../../../components/common";
+
 function AddData() {
-  //   const history = useHistory();
   const [update, setUpdate] = useState(1);
   const [patients, setPatients] = useState([
     {
@@ -13,6 +14,7 @@ function AddData() {
       medicines: "",
     },
   ]);
+
   const AddNewLine = () => {
     let clonePatients = patients;
     clonePatients.push({
@@ -24,64 +26,71 @@ function AddData() {
     setPatients(clonePatients);
     setUpdate(clonePatients.length);
   };
+
   const removeLine = (index) => {
     let clonePatients = patients;
     clonePatients.splice(index, 1);
     setPatients(clonePatients);
     setUpdate(clonePatients.length);
   };
+  11;
   const updatePatient = (value, index) => {
     let clonePatients = patients;
     clonePatients[index] = value;
     setPatients(clonePatients);
     setUpdate(clonePatients.length);
   };
+
   const AddRecordsToIpfs = async () => {
     try {
-      //   let value = await makeHash(patients);
-      if (value.status) {
-        // history.push(`/hash/${value.hash}`);
-      } else {
-        // history.push(`/error`);
-      }
+      const value = await makeHash(patients);
+      console.log(value);
+      // if (value.status) {
+      //   console.log(value.hash);
+      // } else {
+      //   return error;
+      // }
     } catch (error) {
-      //   history.push(`/error`);
+      return error;
     }
   };
+
   return (
     <div>
-      <h3 style={{ marginBottom: `${5}%` }}>Enter patient's data</h3>
-      {patients.map((patient, i) => (
-        <Patient
-          key={i}
-          patient={patient}
-          update={update}
-          index={i}
-          AddNewLine={AddNewLine}
-          removeLine={removeLine}
-          updatePatient={updatePatient}
-        />
-      ))}
-      <div className="col-md-12" style={{ textAlign: "right" }}>
+      <Layout>
+        <h3 style={{ marginBottom: `${5}%` }}>Enter patient's data</h3>
+        {patients.map((patient, i) => (
+          <Patient
+            key={i}
+            patient={patient}
+            update={update}
+            index={i}
+            AddNewLine={AddNewLine}
+            removeLine={removeLine}
+            updatePatient={updatePatient}
+          />
+        ))}
+        <div className="col-md-12" style={{ textAlign: "right" }}>
+          <button
+            onClick={() => {
+              AddNewLine();
+            }}
+            type="button"
+            className="btn btn-primary"
+          >
+            Add New
+          </button>
+        </div>
         <button
           onClick={() => {
-            AddNewLine();
+            AddRecordsToIpfs();
           }}
           type="button"
           className="btn btn-primary"
         >
-          Add New
+          Add Records
         </button>
-      </div>
-      <button
-        onClick={() => {
-          AddRecordsToIpfs();
-        }}
-        type="button"
-        className="btn btn-primary"
-      >
-        Add Records
-      </button>
+      </Layout>
     </div>
   );
 }

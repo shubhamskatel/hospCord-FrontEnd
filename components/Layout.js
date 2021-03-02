@@ -14,7 +14,7 @@ export default (props) => {
         />
       </Head>
       <Header />
-      {props.children}
+      <div style={{ paddingTop: "70px" }}>{props.children}</div>
     </Container>
   );
 };

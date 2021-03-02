@@ -21,7 +21,7 @@ class newDoctor extends Component {
     const summary = await hospital.methods
       .viewDoctor(this.props.address)
       .call();
-      
+
     this.setState({
       docname: summary[0],
       dochosp: summary[1],
@@ -56,7 +56,7 @@ class newDoctor extends Component {
   render() {
     return (
       <Layout>
-        <h3 style={{ paddingTop: "80px" }}>New Doctor Created</h3>
+        <h3>New Doctor Created</h3>
         {this.renderCards()}
       </Layout>
     );
