@@ -5,6 +5,7 @@ import Layout from "../../components/Layout";
 import Record from "../../components/abis/Record";
 import { Link } from "../../routes";
 import web3 from "../../components/abis/web3";
+import { decHash } from "../../components/common";
 
 class RecordDetail extends Component {
   state = {
@@ -14,6 +15,10 @@ class RecordDetail extends Component {
     doctor: "",
     hospital: "",
     address: "",
+    hash: "",
+    loading: false,
+    show: false,
+    allData: "",
   };
 
   static async getInitialProps(props) {
@@ -26,6 +31,8 @@ class RecordDetail extends Component {
     const record = Record(this.props.address);
 
     const summary = await record.methods.getSummary().call();
+    const _hash = await record.methods.getHash().call();
+    // this.getData;
 
     this.setState({
       name: summary[0],
@@ -33,26 +40,9 @@ class RecordDetail extends Component {
       bloodGroup: summary[2],
       doctor: summary[3],
       hospital: summary[4],
+      hash: _hash,
     });
   }
-
-  //   onCreate = async (event) => {
-  //     event.preventDefault();
-
-  //     try {
-  //       const accounts = await web3.eth.getAccounts();
-
-  //       const patient = Patient(this.props.address);
-  //       await patient.methods.addrecord().send({ from: accounts[0] });
-
-  //       const add = await patient.methods.addr().call();
-  //       this.setState({ address: add });
-
-  //       Router.pushRoute(`/patient/ipfs/${this.state.address}`);
-  //     } catch (err) {
-  //       return err;
-  //     }
-  //   };
 
   renderCards() {
     const items = [
@@ -74,10 +64,29 @@ class RecordDetail extends Component {
         description: "Assigned Doctor of the Record",
         style: { overflowWrap: "break-word" },
       },
+      {
+        header: this.state.hash,
+        description: "IPFS Hash of the stored record",
+        style: { overflowWrap: "break-word" },
+      },
     ];
 
     return <Card.Group items={items} />;
   }
+
+  getData = async () => {
+    try {
+      this.setState({ loading: true });
+      const getValues = await decHash(this.state.hash);
+      this.setState({ show: true });
+      this.setState({ loading: false });
+      this.setState({ allData: getValues.data });
+    } catch (error) {
+      this.setState({ show: true });
+      this.setState({ loading: false });
+      console.log("Error:", error);
+    }
+  };
 
   render() {
     return (
@@ -85,33 +94,50 @@ class RecordDetail extends Component {
         <h1>Record Details</h1>
         <br></br>
 
-        {/* <Form onSubmit={this.onCreate}>
-          <a>
-            <Button
-              floated="right"
-              content="Create a New Record"
-              icon="add circle"
-              type="submit"
-              primary
-            />
-          </a>
-        </Form> */}
-
         <Grid>
           <Grid.Row>
-            <Grid.Column width={20}>{this.renderCards()}</Grid.Column>
-          </Grid.Row>
-
-          <Grid.Row>
-            <Grid.Column>
-              <Link route={`/records/${this.props.address}/finalRecord`}>
-                <a>
-                  <Button primary>View Full Record</Button>
-                </a>
-              </Link>
+            <Grid.Column width={15}>
+              {this.state.name != "" && this.renderCards()}
             </Grid.Column>
           </Grid.Row>
         </Grid>
+        <br></br>
+
+        <Button onClick={this.getData} primary>
+          View Full Record
+        </Button>
+
+        <br></br>
+        <br></br>
+        <br></br>
+
+        {Array.isArray(this.state.allData) && this.state.allData.length > 0 ? (
+          <table class="table ">
+            <thead>
+              <tr>
+                <th scope="col">S. No.</th>
+                <th scope="col">disease</th>
+                <th scope="col">summary</th>
+                <th scope="col">medicines</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.allData.map((val) => (
+                <tr>
+                  <th scope="row">{val.serialNumber}</th>
+                  <td>{val.disease}</td>
+                  <td>{val.summary}</td>
+                  <td>{val.medicines}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : this.state.show ? (
+          "Error Data is not in proper order/tables"
+        ) : (
+          ""
+        )}
+        {this.state.loading ? <p>Loading Please Wait....</p> : ""}
       </Layout>
     );
   }

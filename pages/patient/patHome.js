@@ -14,7 +14,7 @@ class Home extends Component {
     bGroup: "",
     id: "",
     address: "",
-    records: "",
+    record: [],
   };
 
   static async getInitialProps(props) {
@@ -25,34 +25,39 @@ class Home extends Component {
   async componentDidMount() {
     const patient = Patient(this.props.address);
     const summary = await patient.methods.getPatient().call();
-
     const records = await patient.methods.getRecords().call();
-    this.renderRecords();
-
-    this.setState({
-      name: summary[0],
-      dob: summary[1],
-      bGroup: summary[2],
-      id: summary[3],
-      record: records,
-    });
+    this.setState(
+      {
+        name: summary[0],
+        dob: summary[1],
+        bGroup: summary[2],
+        id: summary[3],
+        record: records,
+      },
+      () => {
+        console.log("Set ++");
+      }
+    );
   }
 
   renderRecords() {
     try {
-      const items = this.state.record.map((address, i) => {
-        return {
-          key: i,
-          header: address,
-          description: (
-            <Link route={`/records/${address}`}>
-              <a>View Campaign</a>
-            </Link>
-          ),
-          fluid: true,
-          style: { overflowWrap: "break-word" },
-        };
-      });
+      const items =
+        this.state &&
+        this.state.record &&
+        this.state.record.map((address, i) => {
+          return {
+            key: `${address}${i}`,
+            header: address,
+            description: (
+              <Link route={`/records/${address}`}>
+                <a>View Campaign</a>
+              </Link>
+            ),
+            fluid: true,
+            style: { overflowWrap: "break-word" },
+          };
+        });
 
       return <Card.Group items={items} />;
     } catch (error) {
@@ -119,8 +124,9 @@ class Home extends Component {
             </a>
           </Form>
 
-          {this.renderCards()}
-
+          {this.state.name !== "" &&
+            this.state.dob !== "" &&
+            this.renderCards()}
           <br></br>
 
           <br></br>

@@ -18,7 +18,7 @@ function Patient({ patient, update, index, removeLine, updatePatient }) {
             <div className="row">
               <div className="form-group col-md-3">
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   name="serialNumber"
                   placeholder="S. No."

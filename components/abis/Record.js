@@ -28,10 +28,30 @@ const abi = [
         name: "_hospital",
         type: "string",
       },
+      {
+        internalType: "address",
+        name: "_disAddress",
+        type: "address",
+      },
     ],
     payable: false,
     stateMutability: "nonpayable",
     type: "constructor",
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "disAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
   },
   {
     constant: false,

@@ -25,6 +25,7 @@ contract Hospital {
     
     
     
+
     //Function adds new doctor (Only Contract deployer can add)
     function addDoctor (string memory _name, string memory _hospital, string memory _password, address _index) public {
         require(msg.sender == manager, "Admin should be the Manager");
@@ -112,6 +113,7 @@ contract PatHome {
     string doctor;
     string hospital;
     address public addr;
+    address disAddress;
 
     // To store all the Record Address of the patient
     address[] public addedRecords;
@@ -123,12 +125,13 @@ contract PatHome {
         id = _id;
         doctor = _doctor;
         hospital = _hospital;
+        disAddress = address(this);
     }
     
     
     //function to add a new record (call to the 3rd contract)
     function addrecord() public {
-        address newRecord = address(new Record(name, dob, bGroup, doctor, hospital));
+        address newRecord = address(new Record(name, dob, bGroup, doctor, hospital, disAddress));
         addedRecords.push(newRecord);
         addr = newRecord;
     }
@@ -166,20 +169,23 @@ contract PatHome {
 
 //Contract to Add or view individual records
 contract Record{
+    
     string name;
     string dob;
     string bGroup;
     string doctor;
     string hospital;
     string recHash;
+    address public disAddress;
     bool flag = true;
     
-    constructor(string memory _name, string memory _dob, string memory _bGroup, string memory _doctor, string memory _hospital) public {
+    constructor(string memory _name, string memory _dob, string memory _bGroup, string memory _doctor, string memory _hospital, address _disAddress) public {
         name = _name;
         dob = _dob;
         bGroup = _bGroup;
         doctor = _doctor;
         hospital = _hospital;
+        disAddress = _disAddress;
     }
     
     function setHash(string memory _recHash) public {

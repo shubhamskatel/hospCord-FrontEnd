@@ -3,8 +3,16 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../../components/Layout";
 import Patient from "./recordForm";
 import { makeHash } from "../../../components/common";
+import Record from "../../../components/abis/Record";
+import web3 from "../../../components/abis/web3";
+import routes, { Router } from "../../../routes";
 
-function AddData() {
+AddData.getInitialProps = async (props) => {
+  const add = props.query.address;
+  return { address: add };
+};
+
+function AddData(props) {
   const [update, setUpdate] = useState(1);
   const [patients, setPatients] = useState([
     {
@@ -43,14 +51,20 @@ function AddData() {
 
   const AddRecordsToIpfs = async () => {
     try {
-      const value = await makeHash(patients);
-      console.log(value);
-      // if (value.status) {
-      //   console.log(value.hash);
-      // } else {
-      //   return error;
-      // }
+      console.log(patients);
+      console.log(patients);
+      const record = Record(props.address);
+      const value = await makeHash(JSON.stringify(patients));
+      const _hash = value.hash;
+      console.log(_hash);
+      const accounts = await web3.eth.getAccounts();
+      await record.methods.setHash(_hash).send({ from: accounts[0] });
+      const finalHash = await record.methods.getHash().call();
+      console.log(finalHash);
+      const disAddress = await record.methods.disAddress().call();
+      Router.pushRoute(`/patient/${disAddress}`);
     } catch (error) {
+      console.log(error, "error from IPFS");
       return error;
     }
   };
@@ -58,6 +72,7 @@ function AddData() {
   return (
     <div>
       <Layout>
+        {/* {props.address} */}
         <h3 style={{ marginBottom: `${5}%` }}>Enter patient's data</h3>
         {patients.map((patient, i) => (
           <Patient
