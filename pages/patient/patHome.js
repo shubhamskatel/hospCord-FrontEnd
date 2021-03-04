@@ -1,11 +1,24 @@
 import React, { Component } from "react";
 import { Card, Button, Form } from "semantic-ui-react";
+import QRCode from "qrcode.react";
+import Modal from "react-modal";
 
 import Patient from "../../components/abis/Patient";
 import Layout from "../../components/Layout";
 import routes, { Link, Router } from "../../routes";
 import AllRecords from "../../components/allRecords";
 import web3 from "../../components/abis/web3";
+
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+  },
+};
 
 class Home extends Component {
   state = {
@@ -15,8 +28,8 @@ class Home extends Component {
     id: "",
     address: "",
     record: [],
+    modal: false,
   };
-
   static async getInitialProps(props) {
     const add = props.query.address;
     return { address: add };
@@ -51,7 +64,7 @@ class Home extends Component {
             header: address,
             description: (
               <Link route={`/records/${address}`}>
-                <a>View Campaign</a>
+                <a>View Record</a>
               </Link>
             ),
             fluid: true,
@@ -104,14 +117,45 @@ class Home extends Component {
     }
   };
 
+  downloadQR = () => {
+    const canvas = document.getElementById("123456");
+    const pngUrl = canvas
+      .toDataURL("image/png")
+      .replace("image/png", "image/octet-stream");
+    let downloadLink = document.createElement("a");
+    downloadLink.href = pngUrl;
+    downloadLink.download = "123456.png";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
   render() {
     return (
       <Layout>
-        <div>
-          <h3>Hello, Patient !!</h3>
-
+        <Modal style={customStyles} isOpen={this.state.modal}>
+          <h3 style={{ textAlign: "center" }}>Patient's ID</h3>
           <br></br>
 
+          <QRCode id="123456" value={this.state.id} size={"300"} />
+          <br></br>
+          <br></br>
+
+          <div style={{ textAlign: "center" }}>
+            <Form onSubmit={this.downloadQR}>
+              <Button content="Download" type="submit" primary />
+            </Form>
+            <br></br>
+
+            <Form onSubmit={() => this.setState({ modal: false })}>
+              <Button content="Close" type="submit" negative />
+            </Form>
+          </div>
+        </Modal>
+
+        <div>
+          <h3>Hello, Patient !!</h3>
+          <br></br>
           <Form onSubmit={this.onCreate}>
             <a>
               <Button
@@ -127,8 +171,23 @@ class Home extends Component {
           {this.state.name !== "" &&
             this.state.dob !== "" &&
             this.renderCards()}
+
+          <br></br>
           <br></br>
 
+          <Form onSubmit={() => this.setState({ modal: true })}>
+            <a>
+              <Button
+                content="Get the QR Code"
+                icon="qrcode"
+                type="submit"
+                primary
+              />
+            </a>
+          </Form>
+
+          <br></br>
+          <br></br>
           <br></br>
           <h3>Previous Records</h3>
           {this.renderRecords()}
