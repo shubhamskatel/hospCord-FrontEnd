@@ -1,5 +1,5 @@
 import web3 from "./web3";
-
+import hospitalJsonnn from '../../build/contracts/Hospital.json';
 const address = "0xFe07E22A142B1f3eB97B8EbbD48eECF8636eb69b";
 
 const abi = [
